@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Paint Application with Layers & Textures</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <label>Tools:</label>
+                    <button id="brushTool" class="active">Brush</button>
+                    <button id="eraserTool">Eraser</button>
+                    <button id="lineTool">Line</button>
+                    <button id="rectangleTool">Rectangle</button>
+                    <button id="circleTool">Circle</button>
+                </div>
+
+                <div class="tool-group">
+                    <label>Size:</label>
+                    <input type="range" id="brushSize" min="1" max="100" value="5">
+                    <span id="sizeDisplay">5px</span>
+                </div>
+
+                <div class="tool-group">
+                    <label>Color:</label>
+                    <input type="color" id="colorPicker" value="#3498db">
+                    <button id="colorBlack">Black</button>
+                    <button id="colorRed">Red</button>
+                    <button id="colorBlue">Blue</button>
+                </div>
+
+                <div class="tool-group">
+                    <label>Actions:</label>
+                    <button id="clearLayer">Clear Layer</button>
+                    <button id="undoBtn">Undo</button>
+                    <button id="redoBtn">Redo</button>
+                    <button id="saveImage">Save</button>
+                </div>
+
+                <div class="tool-group">
+                    <label>Preview:</label>
+                    <div class="brush-preview" id="brushPreview"></div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="paintCanvas" width="800" height="600"></canvas>
+            </div>
+
+            <div class="status-bar">
+                <div class="coordinates" id="mouseCoords">Mouse: (0, 0)</div>
+                <div>Tool: <span id="currentTool">Brush</span> | Size: <span id="currentSize">5px</span> | Layer: <span id="currentLayer">Background</span></div>
+                <div>Advanced Paint App with Layers & Textures</div>
+            </div>
+        </div>
+
+        <div class="layer-panel">
+            <h3>🎨 Layers</h3>
+            <div class="layer-list" id="layerList">
+                <!-- Layers will be dynamically generated -->
+            </div>
+            <button id="addLayer">+ Add Layer</button>
+            <button id="duplicateLayer">📄 Duplicate</button>
+            <button id="deleteLayer">🗑 Delete</button>
+
+            <div class="brush-textures">
+                <h3>🖌 Brush Textures</h3>
+                <div class="texture-grid">
+                    <button class="texture-btn active" data-texture="solid">Solid</button>
+                    <button class="texture-btn" data-texture="dots">Dots</button>
+                    <button class="texture-btn" data-texture="lines">Lines</button>
+                    <button class="texture-btn" data-texture="crosshatch">Cross</button>
+                    <button class="texture-btn" data-texture="spray">Spray</button>
+                    <button class="texture-btn" data-texture="fur">Fur</button>
+                    <button class="texture-btn" data-texture="stars">Stars</button>
+                    <button class="texture-btn" data-texture="noise">Noise</button>
+                    <button class="texture-btn" data-texture="watercolor">Water</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvases for texture generation -->
+    <canvas id="textureCanvas" class="texture-canvas" width="100" height="100"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>
