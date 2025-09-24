@@ -1,92 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Advanced Paint Application with Layers & Textures</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .app-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 1400px;
+        width: 100%;
+        display: flex;
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        background: #2c3e50;
+        padding: 15px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tool-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+
+      .tool-group label {
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+
+      button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+      }
+
+      button.active {
+        background: #e74c3c;
+      }
+
+      input[type="range"] {
+        width: 80px;
+        margin: 0 8px;
+      }
+
+      input[type="color"] {
+        width: 40px;
+        height: 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .canvas-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        background: #f8f9fa;
+        padding: 20px;
+        flex: 1;
+      }
+
+      #paintCanvas {
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: crosshair;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+        position: relative;
+      }
+
+      .layer-panel {
+        width: 250px;
+        background: #34495e;
+        color: white;
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .layer-panel h3 {
+        margin-bottom: 15px;
+        color: #ecf0f1;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+      }
+
+      .layer-list {
+        margin-bottom: 20px;
+      }
+
+      .layer-item {
+        background: rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .layer-item.active {
+        background: #3498db;
+      }
+
+      .layer-header {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .layer-name {
+        font-size: 13px;
+        font-weight: bold;
+      }
+
+      .layer-controls {
+        display: flex;
+        gap: 5px;
+      }
+
+      .layer-controls button {
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
+      .opacity-control {
+        padding: 8px 10px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .opacity-control input {
+        width: 100%;
+        margin-top: 5px;
+      }
+
+      .brush-textures {
+        margin-top: 20px;
+      }
+
+      .texture-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .texture-btn {
+        width: 60px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        border-radius: 3px;
+      }
+
+      .status-bar {
+        background: #34495e;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+      }
+
+      .coordinates {
+        font-family: "Courier New", monospace;
+      }
+
+      .brush-preview {
+        width: 30px;
+        height: 30px;
+        border: 2px solid white;
+        border-radius: 50%;
+        background: #3498db;
+      }
+
+      .texture-canvas {
+        display: none;
+      }
+
+      @media (max-width: 1024px) {
+        .app-container {
+          flex-direction: column;
+        }
+
+        .layer-panel {
+          width: 100%;
+          max-height: 200px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .toolbar {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .tool-group {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
     <div class="app-container">
-        <div class="main-content">
-            <div class="toolbar">
-                <div class="tool-group">
-                    <label>Tools:</label>
-                    <button id="brushTool" class="active">Brush</button>
-                    <button id="eraserTool">Eraser</button>
-                    <button id="lineTool">Line</button>
-                    <button id="rectangleTool">Rectangle</button>
-                    <button id="circleTool">Circle</button>
-                </div>
+      <div class="main-content">
+        <div class="toolbar">
+          <div class="tool-group">
+            <label>Tools:</label>
+            <button id="brushTool" class="active">Brush</button>
+            <button id="eraserTool">Eraser</button>
+            <button id="lineTool">Line</button>
+            <button id="rectangleTool">Rectangle</button>
+            <button id="circleTool">Circle</button>
+          </div>
 
-                <div class="tool-group">
-                    <label>Size:</label>
-                    <input type="range" id="brushSize" min="1" max="100" value="5">
-                    <span id="sizeDisplay">5px</span>
-                </div>
+          <div class="tool-group">
+            <label>Size:</label>
+            <input type="range" id="brushSize" min="1" max="100" value="5" />
+            <span id="sizeDisplay">5px</span>
+          </div>
 
-                <div class="tool-group">
-                    <label>Color:</label>
-                    <input type="color" id="colorPicker" value="#3498db">
-                    <button id="colorBlack">Black</button>
-                    <button id="colorRed">Red</button>
-                    <button id="colorBlue">Blue</button>
-                </div>
+          <div class="tool-group">
+            <label>Color:</label>
+            <input type="color" id="colorPicker" value="#3498db" />
+            <button id="colorBlack">Black</button>
+            <button id="colorRed">Red</button>
+            <button id="colorBlue">Blue</button>
+          </div>
 
-                <div class="tool-group">
-                    <label>Actions:</label>
-                    <button id="clearLayer">Clear Layer</button>
-                    <button id="undoBtn">Undo</button>
-                    <button id="redoBtn">Redo</button>
-                    <button id="saveImage">Save</button>
-                </div>
+          <div class="tool-group">
+            <label>Actions:</label>
+            <button id="clearLayer">Clear Layer</button>
+            <button id="undoBtn">Undo</button>
+            <button id="redoBtn">Redo</button>
+            <button id="saveImage">Save</button>
+          </div>
 
-                <div class="tool-group">
-                    <label>Preview:</label>
-                    <div class="brush-preview" id="brushPreview"></div>
-                </div>
-            </div>
-
-            <div class="canvas-container">
-                <canvas id="paintCanvas" width="800" height="600"></canvas>
-            </div>
-
-            <div class="status-bar">
-                <div class="coordinates" id="mouseCoords">Mouse: (0, 0)</div>
-                <div>Tool: <span id="currentTool">Brush</span> | Size: <span id="currentSize">5px</span> | Layer: <span id="currentLayer">Background</span></div>
-                <div>Advanced Paint App with Layers & Textures</div>
-            </div>
+          <div class="tool-group">
+            <label>Preview:</label>
+            <div class="brush-preview" id="brushPreview"></div>
+          </div>
         </div>
 
-        <div class="layer-panel">
-            <h3>🎨 Layers</h3>
-            <div class="layer-list" id="layerList">
-                <!-- Layers will be dynamically generated -->
-            </div>
-            <button id="addLayer">+ Add Layer</button>
-            <button id="duplicateLayer">📄 Duplicate</button>
-            <button id="deleteLayer">🗑 Delete</button>
-
-            <div class="brush-textures">
-                <h3>🖌 Brush Textures</h3>
-                <div class="texture-grid">
-                    <button class="texture-btn active" data-texture="solid">Solid</button>
-                    <button class="texture-btn" data-texture="dots">Dots</button>
-                    <button class="texture-btn" data-texture="lines">Lines</button>
-                    <button class="texture-btn" data-texture="crosshatch">Cross</button>
-                    <button class="texture-btn" data-texture="spray">Spray</button>
-                    <button class="texture-btn" data-texture="fur">Fur</button>
-                    <button class="texture-btn" data-texture="stars">Stars</button>
-                    <button class="texture-btn" data-texture="noise">Noise</button>
-                    <button class="texture-btn" data-texture="watercolor">Water</button>
-                </div>
-            </div>
+        <div class="canvas-container">
+          <canvas id="paintCanvas" width="800" height="600"></canvas>
         </div>
+
+        <div class="status-bar">
+          <div class="coordinates" id="mouseCoords">Mouse: (0, 0)</div>
+          <div>
+            Tool: <span id="currentTool">Brush</span> | Size:
+            <span id="currentSize">5px</span> | Layer:
+            <span id="currentLayer">Background</span>
+          </div>
+          <div>Advanced Paint App with Layers & Textures</div>
+        </div>
+      </div>
+
+      <div class="layer-panel">
+        <h3>🎨 Layers</h3>
+        <div class="layer-list" id="layerList">
+          <!-- Layers will be dynamically generated -->
+        </div>
+        <button id="addLayer">+ Add Layer</button>
+        <button id="duplicateLayer">📄 Duplicate</button>
+        <button id="deleteLayer">🗑 Delete</button>
+
+        <div class="brush-textures">
+          <h3>🖌 Brush Textures</h3>
+          <div class="texture-grid">
+            <button class="texture-btn active" data-texture="solid">
+              Solid
+            </button>
+            <button class="texture-btn" data-texture="dots">Dots</button>
+            <button class="texture-btn" data-texture="lines">Lines</button>
+            <button class="texture-btn" data-texture="crosshatch">Cross</button>
+            <button class="texture-btn" data-texture="spray">Spray</button>
+            <button class="texture-btn" data-texture="fur">Fur</button>
+            <button class="texture-btn" data-texture="stars">Stars</button>
+            <button class="texture-btn" data-texture="noise">Noise</button>
+            <button class="texture-btn" data-texture="watercolor">Water</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Hidden canvases for texture generation -->
-    <canvas id="textureCanvas" class="texture-canvas" width="100" height="100"></canvas>
+    <canvas
+      id="textureCanvas"
+      class="texture-canvas"
+      width="100"
+      height="100"
+    ></canvas>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
